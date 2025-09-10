@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AyurSutra - Panchakarma Management Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#218086">
+    <meta name="description" content="Comprehensive Panchakarma Patient Management and Therapy Scheduling Software">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧘</text></svg>">
+</head>
+<body>
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Loading AyurSutra...</p>
+    </div>
+
+    <div id="roleSelection" class="role-selection">
+        <div class="role-container">
+            <div class="brand-header">
+                <div class="brand-logo">🧘</div>
+                <h1>AyurSutra</h1>
+                <p>Panchakarma Management Platform</p>
+            </div>
+            
+            <div class="role-cards">
+                <div class="role-card" data-role="patient">
+                    <div class="role-icon">👤</div>
+                    <h2>Patient</h2>
+                    <p>Access your therapy schedule, track progress, and manage appointments</p>
+                    <button type="button" class="btn btn--primary">Continue as Patient</button>
+                </div>
+                
+                <div class="role-card" data-role="practitioner">
+                    <div class="role-icon">👨‍⚕️</div>
+                    <h2>Practitioner</h2> 
+                    <p>Manage patients, schedule therapies, and track treatment outcomes</p>
+                    <button type="button" class="btn btn--primary">Continue as Practitioner</button>
+                </div>
+                
+                <div class="role-card" data-role="admin">
+                    <div class="role-icon">👨‍💼</div>
+                    <h2>Administrator</h2>
+                    <p>System overview, user management, analytics, and reports</p>
+                    <button type="button" class="btn btn--primary">Continue as Admin</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mainApp" class="main-app hidden">
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo">🧘 AyurSutra</div>
+                <nav class="main-nav">
+                    <a href="#dashboard" class="nav-link active" data-view="dashboard">Dashboard</a>
+                    <a href="#patients" class="nav-link" data-view="patients">Patients</a>
+                    <a href="#schedule" class="nav-link" data-view="schedule">Schedule</a>
+                    <a href="#analytics" class="nav-link" data-view="analytics">Analytics</a>
+                </nav>
+            </div>
+            <div class="header-right">
+                <button type="button" class="notification-btn" id="notificationBtn">
+                    <span class="notification-icon">🔔</span>
+                    <span class="notification-badge">3</span>
+                </button>
+                <div class="user-profile">
+                    <span class="user-name" id="userName">Loading...</span>
+                    <div class="user-avatar">👤</div>
+                </div>
+                <button type="button" class="btn btn--sm btn--outline" id="roleChangeBtn">Change Role</button>
+            </div>
+        </header>
+
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <div class="menu-item active" data-view="dashboard">
+                    <span class="menu-icon">📊</span>
+                    <span class="menu-text">Dashboard</span>
+                </div>
+                <div class="menu-item" data-view="patients">
+                    <span class="menu-icon">👥</span>
+                    <span class="menu-text">Patient Management</span>
+                </div>
+                <div class="menu-item" data-view="schedule">
+                    <span class="menu-icon">📅</span>
+                    <span class="menu-text">AI Scheduling</span>
+                </div>
+                <div class="menu-item" data-view="notifications">
+                    <span class="menu-icon">🔔</span>
+                    <span class="menu-text">Notifications</span>
+                </div>
+                <div class="menu-item" data-view="analytics">
+                    <span class="menu-icon">📈</span>
+                    <span class="menu-text">Analytics</span>
+                </div>
+                <div class="menu-item" data-view="therapies">
+                    <span class="menu-icon">💆‍♀️</span>
+                    <span class="menu-text">Therapy Management</span>
+                </div>
+                <div class="menu-item" data-view="settings">
+                    <span class="menu-icon">⚙️</span>
+                    <span class="menu-text">Settings</span>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div id="dashboardView" class="view active">
+                <div class="view-header">
+                    <h1>Dashboard</h1>
+                    <p>Welcome to your personalized healthcare management center</p>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">👤</div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="totalPatients">0</div>
+                                <div class="stat-label">Total Patients</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📅</div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="todayAppointments">0</div>
+                                <div class="stat-label">Today's Appointments</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">💆‍♀️</div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="activeTherapies">0</div>
+                                <div class="stat-label">Active Therapies</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📈</div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="successRate">0%</div>
+                                <div class="stat-label">Success Rate</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__header">
+                            <h2>Upcoming Appointments</h2>
+                            <button type="button" class="btn btn--sm btn--outline">View All</button>
+                        </div>
+                        <div class="card__body">
+                            <div id="upcomingAppointments" class="appointment-list">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__header">
+                            <h2>Therapy Progress Overview</h2>
+                        </div>
+                        <div class="card__body">
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="progressChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__header">
+                            <h2>AI-Powered Insights</h2>
+                        </div>
+                        <div class="card__body">
+                            <div class="ai-recommendations">
+                                <div class="recommendation-item">
+                                    <span class="recommendation-icon">🤖</span>
+                                    <p>Optimal scheduling efficiency: 88% - 40% reduction in wait times</p>
+                                </div>
+                                <div class="recommendation-item">
+                                    <span class="recommendation-icon">📊</span>
+                                    <p>Resource utilization at 85% - Room 2 available for optimization</p>
+                                </div>
+                                <div class="recommendation-item">
+                                    <span class="recommendation-icon">😊</span>
+                                    <p>Patient satisfaction score: 92% - Above industry average</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="patientsView" class="view hidden">
+                <div class="view-header">
+                    <h1>Patient Management</h1>
+                    <div class="view-actions">
+                        <button type="button" class="btn btn--primary" id="addPatientBtn">+ Add New Patient</button>
+                        <button type="button" class="btn btn--outline">Import Patients</button>
+                    </div>
+                </div>
+
+                <div class="patients-container">
+                    <div class="patients-filters">
+                        <label for="patientSearch" class="sr-only">Search patients</label>
+                        <input type="text" class="form-control" placeholder="Search patients..." id="patientSearch">
+                        
+                        <label for="doshaFilter" class="sr-only">Filter by Dosha</label>
+                        <select class="form-control" id="doshaFilter">
+                            <option value="">All Doshas</option>
+                            <option value="Vata">Vata</option>
+                            <option value="Pitta">Pitta</option>
+                            <option value="Kapha">Kapha</option>
+                        </select>
+                        
+                        <label for="statusFilter" class="sr-only">Filter by Status</label>
+                        <select class="form-control" id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="active">Active Treatment</option>
+                            <option value="completed">Completed</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+
+                    <div id="patientsList" class="patients-grid">
+                        </div>
+                </div>
+            </div>
+
+            <div id="scheduleView" class="view hidden">
+                <div class="view-header">
+                    <h1>AI-Powered Scheduling</h1>
+                    <p>Intelligent therapy scheduling with conflict resolution and optimization</p>
+                </div>
+
+                <div class="schedule-container">
+                    <div class="schedule-sidebar">
+                        <div class="card">
+                            <div class="card__header">
+                                <h2>Quick Schedule</h2>
+                            </div>
+                            <div class="card__body">
+                                <form id="quickScheduleForm">
+                                    <div class="form-group">
+                                        <label class="form-label" for="schedulePatient">Patient</label>
+                                        <select class="form-control" id="schedulePatient" required>
+                                            <option value="">Select Patient</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="scheduleTherapy">Therapy Type</label>
+                                        <select class="form-control" id="scheduleTherapy" required>
+                                            <option value="">Select Therapy</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="scheduleDate">Preferred Date</label>
+                                        <input type="date" class="form-control" id="scheduleDate" required>
+                                    </div>
+                                    <button type="submit" class="btn btn--primary btn--full-width">Get AI Suggestions</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card__header">
+                                <h2>AI Recommendations</h2>
+                            </div>
+                            <div class="card__body">
+                                <div id="aiSuggestions" class="ai-suggestions">
+                                    <p class="text-muted">Select patient and therapy to see AI recommendations</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="schedule-main">
+                        <div class="calendar-header">
+                            <button type="button" class="btn btn--outline" id="prevWeek">← Previous</button>
+                            <h2 id="currentWeek">September 9-15, 2025</h2>
+                            <button type="button" class="btn btn--outline" id="nextWeek">Next →</button>
+                        </div>
+                        <div id="scheduleCalendar" class="schedule-calendar">
+                            </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="analyticsView" class="view hidden">
+                <div class="view-header">
+                    <h1>Analytics & Reports</h1>
+                    <p>Comprehensive insights into therapy outcomes and operational efficiency</p>
+                </div>
+
+                <div class="analytics-container">
+                    <div class="analytics-tabs">
+                        <button type="button" class="tab-btn active" data-tab="overview">Overview</button>
+                        <button type="button" class="tab-btn" data-tab="patient-outcomes">Patient Outcomes</button>
+                        <button type="button" class="tab-btn" data-tab="operational">Operational Metrics</button>
+                        <button type="button" class="tab-btn" data-tab="financial">Financial Analysis</button>
+                    </div>
+
+                    <div class="tab-content active" id="overviewTab">
+                        <div class="analytics-grid">
+                            <div class="card">
+                                <div class="card__header">
+                                    <h2>Treatment Effectiveness</h2>
+                                </div>
+                                <div class="card__body">
+                                    <div class="chart-container" style="position: relative; height: 300px;">
+                                        <canvas id="effectivenessChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card__header">
+                                    <h2>Dosha Distribution</h2>
+                                </div>
+                                <div class="card__body">
+                                    <div class="chart-container" style="position: relative; height: 300px;">
+                                        <canvas id="doshaChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card__header">
+                                    <h2>Monthly Appointments</h2>
+                                </div>
+                                <div class="card__body">
+                                    <div class="chart-container" style="position: relative; height: 300px;">
+                                        <canvas id="appointmentsChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card__header">
+                                    <h2>Key Performance Indicators</h2>
+                                </div>
+                                <div class="card__body">
+                                    <div class="kpi-grid">
+                                        <div class="kpi-item">
+                                            <div class="kpi-value">92%</div>
+                                            <div class="kpi-label">Patient Satisfaction</div>
+                                        </div>
+                                        <div class="kpi-item">
+                                            <div class="kpi-value">88%</div>
+                                            <div class="kpi-label">Schedule Efficiency</div>
+                                        </div>
+                                        <div class="kpi-item">
+                                            <div class="kpi-value">85%</div>
+                                            <div class="kpi-label">Resource Utilization</div>
+                                        </div>
+                                        <div class="kpi-item">
+                                            <div class="kpi-value">40%</div>
+                                            <div class="kpi-label">Wait Time Reduction</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="notificationsView" class="view hidden">
+                <div class="view-header">
+                    <h1>Notification Center</h1>
+                    <div class="view-actions">
+                        <button type="button" class="btn btn--primary" id="addNotificationBtn">+ Add Alert</button>
+                    </div>
+                </div>
+
+                <div class="notifications-container">
+                    <div class="notifications-sidebar">
+                        <div class="card">
+                            <div class="card__header">
+                                <h2>Notification Settings</h2>
+                            </div>
+                            <div class="card__body">
+                                <div class="notification-channels">
+                                    <label class="checkbox-label" for="sms-alerts">
+                                        <input type="checkbox" id="sms-alerts" checked> SMS Alerts
+                                    </label>
+                                    <label class="checkbox-label" for="email-reminders">
+                                        <input type="checkbox" id="email-reminders" checked> Email Reminders
+                                    </label>
+                                </div>
+                                <button type="button" class="btn btn--primary btn--full-width">Save Settings</button>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card__header">
+                                <h2>Send Custom Alert</h2>
+                            </div>
+                            <div class="card__body">
+                                <form id="customNotificationForm">
+                                    <div class="form-group">
+                                        <label class="form-label" for="customAlertRecipient">Recipient</label>
+                                        <select class="form-control" id="customAlertRecipient" required>
+                                            <option value="">Select an active patient</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group hidden" id="recipientEmailGroup">
+                                        <label class="form-label" for="customAlertEmail">Patient's Email</label>
+                                        <input type="email" id="customAlertEmail" class="form-control" placeholder="Enter patient's email" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="customAlertMessage">Message</label>
+                                        <textarea class="form-control" id="customAlertMessage" rows="3" placeholder="Enter your message..." required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn--primary btn--full-width">Send Notification</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="notifications-main">
+                        <div id="notificationsList" class="notifications-list">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="therapiesView" class="view hidden">
+                <div class="view-header">
+                    <h1>Therapy Management</h1>
+                    <div class="view-actions">
+                        <button type="button" class="btn btn--primary" id="addTherapyBtn">+ Add New Therapy</button>
+                    </div>
+                </div>
+
+                <div id="therapiesList" class="therapies-grid">
+                    </div>
+            </div>
+
+            <div id="settingsView" class="view hidden">
+                <div class="view-header">
+                    <h1>Settings</h1>
+                    <p>Configure your account and application preferences</p>
+                </div>
+
+                <div class="settings-container">
+                    <div class="settings-tabs">
+                        <button type="button" class="tab-btn active" data-tab="profile">Profile</button>
+                    </div>
+
+                    <div class="tab-content active" id="profileTab">
+                        <div class="card">
+                            <div class="card__header">
+                                <h2>Profile Information</h2>
+                            </div>
+                            <div class="card__body">
+                                <form class="settings-form">
+                                    <div class="form-group">
+                                        <label class="form-label" for="fullName">Full Name</label>
+                                        <input type="text" id="fullName" class="form-control" value="Dr. Anil Gupta">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="email">Email</label>
+                                        <input type="email" id="email" class="form-control" value="anil.gupta@ayursutra.com">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="phone">Phone</label>
+                                        <input type="tel" id="phone" class="form-control" value="+91 9876543210">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="specialization">Specialization</label>
+                                        <input type="text" id="specialization" class="form-control" value="Panchakarma Specialist">
+                                    </div>
+                                    <button type="submit" class="btn btn--primary">Update Profile</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="addPatientModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Patient</h2>
+                <button type="button" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addPatientForm">
+                    <div class="form-group">
+                        <label class="form-label" for="patientName">Full Name</label>
+                        <input type="text" id="patientName" class="form-control" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="patientAge">Age</label>
+                        <input type="number" id="patientAge" class="form-control" name="age" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="patientCondition">Primary Condition</label>
+                        <input type="text" id="patientCondition" class="form-control" name="condition" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="patientDosha">Dosha Assessment</label>
+                        <select class="form-control" id="patientDosha" name="dosha" required>
+                            <option value="">Select Dosha Type</option>
+                            <option value="Vata">Vata Dominant</option>
+                            <option value="Pitta">Pitta Dominant</option>
+                            <option value="Kapha">Kapha Dominant</option>
+                            <option value="Vata-Pitta">Vata-Pitta</option>
+                            <option value="Pitta-Kapha">Pitta-Kapha</option>
+                            <option value="Kapha-Vata">Kapha-Vata</option>
+                        </select>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn--outline" id="cancelPatient">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Add Patient</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div id="notificationPanel" class="notification-panel hidden">
+        <div class="notification-header">
+            <h3>Recent Notifications</h3>
+            <button type="button" class="panel-close">&times;</button>
+        </div>
+        <div class="notification-content" id="notificationContent">
+        </div>
+        <div class="notification-footer">
+            <button type="button" class="btn btn--outline btn--sm">View All Notifications</button>
+        </div>
+    </div>
+    
+    <div id="customModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="customModalHeader">Confirm Action</h2>
+                <button type="button" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="customModalMessage">Are you sure?</p>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn--outline" id="customModalCancel">Cancel</button>
+                <button type="button" class="btn btn--danger" id="customModalConfirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="editPatientModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Patient</h2>
+                <button type="button" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editPatientForm">
+                    <input type="hidden" name="id" />
+                    <div class="form-group">
+                        <label class="form-label" for="editPatientName">Name</label>
+                        <input type="text" id="editPatientName" name="name" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editPatientAge">Age</label>
+                        <input type="number" id="editPatientAge" name="age" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editPatientCondition">Condition</label>
+                        <input type="text" id="editPatientCondition" name="condition" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editPatientDosha">Dosha</label>
+                        <input type="text" id="editPatientDosha" name="dosha" required />
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn--outline" id="cancelEditPatient">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="addTherapyModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Therapy</h2>
+                <button type="button" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addTherapyForm">
+                    <div class="form-group">
+                        <label class="form-label" for="addTherapyName">Name</label>
+                        <input type="text" id="addTherapyName" name="name" placeholder="Name" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="addTherapyDuration">Duration (days)</label>
+                        <input type="number" id="addTherapyDuration" name="duration" placeholder="Duration (days)" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="addTherapyDescription">Description</label>
+                        <textarea id="addTherapyDescription" name="description" placeholder="Description"></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" id="cancelAddTherapy" class="btn btn--outline">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="editTherapyModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Therapy</h2>
+                <button type="button" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editTherapyForm">
+                    <input type="hidden" name="id" />
+                    <div class="form-group">
+                        <label class="form-label" for="editTherapyName">Name</label>
+                        <input type="text" id="editTherapyName" name="name" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editTherapyDuration">Duration (days)</label>
+                        <input type="number" id="editTherapyDuration" name="duration" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editTherapyDescription">Description</label>
+                        <textarea id="editTherapyDescription" name="description"></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" id="cancelEditTherapy" class="btn btn--outline">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="addNotificationModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Notification</h2>
+                <button type="button" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addNotificationForm">
+                    <div class="form-group">
+                        <label class="form-label" for="addNotificationMessage">Message</label>
+                        <textarea id="addNotificationMessage" name="message" placeholder="Message" required></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" id="cancelAddNotification" class="btn btn--outline">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="editNotificationModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Notification</h2>
+                <button type="button" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editNotificationForm">
+                    <input type="hidden" name="id" />
+                    <div class="form-group">
+                        <label class="form-label" for="editNotificationMessage">Message</label>
+                        <textarea id="editNotificationMessage" name="message" required></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" id="cancelEditNotification" class="btn btn--outline">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
